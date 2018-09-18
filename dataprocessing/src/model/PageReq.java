@@ -1,7 +1,18 @@
 package model;
 
+import java.util.List;
+
 public class PageReq {
     public Request[] requests;
+
+    public PageReq(Request[] r) {
+        requests = r;
+    }
+
+    public PageReq(List<Request> r) {
+        requests = new Request[r.size()];
+        requests = r.toArray(requests);
+    }
 
     @Override
     public String toString() {
