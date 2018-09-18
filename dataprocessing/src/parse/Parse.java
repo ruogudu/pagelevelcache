@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import model.PageReq;
 import model.Request;
+import process.Processor;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Parse {
-    public static void readStream(String filepath) {
+    public static void readStream(String filepath, Processor p) {
         try {
             FileInputStream in = new FileInputStream(filepath);
             JsonReader reader = new JsonReader(new InputStreamReader(in, "ASCII"));
@@ -34,6 +35,7 @@ public class Parse {
                 reader.endArray();
 
                 PageReq pr = new PageReq(reqs);
+                p.take(pr);
                 System.out.println(pr.toString());
             }
 
