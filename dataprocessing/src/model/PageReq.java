@@ -26,6 +26,7 @@ public class PageReq {
             sb.append(",");
             sb.append(requests[i].toString());
         }
+        sb.append("]");
         return sb.toString();
     }
 }
