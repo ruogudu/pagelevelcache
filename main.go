@@ -1,7 +1,11 @@
 package main
 
-import "github.com/Onmysofa/pagelevelcache/evaluate"
+import (
+	"github.com/Onmysofa/pagelevelcache/evaluate"
+	"time"
+)
 
 func main() {
-	evaluate.EvalGcache(100000, 100000000, 100)
+	evaluate.EvalGcache(1000, 1000000, 10)
+	evaluate.EvalCcache(1000, 1000000, 500, time.Minute * 10, 10)
 }

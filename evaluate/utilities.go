@@ -27,7 +27,7 @@ func insertUtil(insertFunc func (key, val string), num int, thread int, algo str
 
 	duration := time.Now().Sub(start)
 	qps := float64(num)/ duration.Seconds()
-	fmt.Printf("Algorithm:%v spent %v to finish %v insertions using %v threads, QPS: %v\n",
+	fmt.Printf("Algorithm:%v spent %v to finish %v insertions using %v threads. Throughput: %v\n",
 		algo, duration, num, thread, qps)
 }
 
