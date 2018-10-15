@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func EvalCcache(size int64, num int, itemsPruning uint32, ttl time.Duration, thread int) {
+func EvalCcache(size int64, num int, itemsPruning uint32, ttl time.Duration, thread int) float64 {
 
 	var cache = ccache.New(ccache.Configure().MaxSize(size).ItemsToPrune(itemsPruning))
 
@@ -13,5 +13,5 @@ func EvalCcache(size int64, num int, itemsPruning uint32, ttl time.Duration, thr
 		cache.Set(key, val, ttl)
 	}
 
-	insertUtil(ins, num, thread, "Ccache")
+	return insertUtil(ins, num, thread, "Ccache")
 }

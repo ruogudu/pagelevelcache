@@ -4,7 +4,7 @@ import (
 	"github.com/Onmysofa/gcache"
 )
 
-func EvalGcache(size int, num int, thread int) {
+func EvalGcache(size int, num int, thread int) float64 {
 
 	gc := gcache.New(size).
 		LFU().
@@ -14,6 +14,6 @@ func EvalGcache(size int, num int, thread int) {
 		gc.Set(key, val)
 	}
 
-	insertUtil(ins, num, thread, "Gcache")
+	return insertUtil(ins, num, thread, "Gcache")
 }
 

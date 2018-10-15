@@ -1,12 +1,11 @@
 package evaluate
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 )
 
-func insertUtil(insertFunc func (key, val string), num int, thread int, algo string) {
+func insertUtil(insertFunc func (key, val string), num int, thread int, algo string) float64 {
 	endChan := make (chan interface{}, thread + 1)
 
 	start := time.Now()
@@ -27,8 +26,9 @@ func insertUtil(insertFunc func (key, val string), num int, thread int, algo str
 
 	duration := time.Now().Sub(start)
 	qps := float64(num)/ duration.Seconds()
-	fmt.Printf("Algorithm:%v spent %v to finish %v insertions using %v threads. Throughput: %v\n",
-		algo, duration, num, thread, qps)
+	//fmt.Printf("Algorithm:%v spent %v to finish %v insertions using %v threads. Throughput: %v\n",
+	//	algo, duration, num, thread, qps)
+	return qps
 }
 
 func insertDaemon(insertFunc func (key, val string), start int, end int, endChan chan interface {}) {
