@@ -1,5 +1,9 @@
 package evaluate
 
+import (
+	"fmt"
+	"github.com/Onmysofa/gcache"
+)
 
 func main() {
 	gc := gcache.New(10).
