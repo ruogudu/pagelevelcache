@@ -1,19 +1,19 @@
 package evaluate
 
 import (
-	"fmt"
 	"github.com/Onmysofa/gcache"
 )
 
-func main() {
-	gc := gcache.New(10).
+func EvalGcache(size int, num int, thread int) {
+
+	gc := gcache.New(size).
 		LFU().
 		Build()
-	gc.Set("key", "ok")
 
-	v, err := gc.Get("key")
-	if err != nil {
-		panic(err)
+	ins := func (key, val string) {
+		gc.Set(key, val)
 	}
-	fmt.Println("value:", v)
+
+	insertUtil(ins, num, thread, "Gcache")
 }
+

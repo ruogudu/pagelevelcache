@@ -7,7 +7,7 @@ import (
 )
 
 func insertUtil(insertFunc func (key, val string), num int, thread int, algo string) {
-	endChan := make (chan interface{}, 1000)
+	endChan := make (chan interface{}, thread + 1)
 
 	start := time.Now()
 
@@ -19,6 +19,10 @@ func insertUtil(insertFunc func (key, val string), num int, thread int, algo str
 		}
 
 		go insertDaemon(insertFunc, (thread - 1) * stride, num, endChan)
+	}
+
+	for i := 0; i < thread; i++ {
+		<- endChan
 	}
 
 	duration := time.Now().Sub(start)
