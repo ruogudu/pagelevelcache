@@ -13,7 +13,7 @@ func main() {
 		for j := 4; j <= 7; j++ {
 			size := math.Pow10(i)
 			num := math.Pow10(j)
-			qps := evaluate.EvalCcachePage(int64(size), int(num), 10, time.Minute * 10, 10)
+			qps := evaluate.EvalCcache(int64(size), int(num), 10, time.Minute * 10, 10)
 			fmt.Printf("%v ", qps);
 		}
 		fmt.Println("")
