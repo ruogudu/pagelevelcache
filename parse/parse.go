@@ -3,20 +3,21 @@ package parse
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"os"
 )
 
 type ObjReq struct {
-	Backend string
+	Backend uint64
 	Size int
-	Uri string
+	Uri uint64
 }
 
 type PageReq struct {
 	Objs []ObjReq
 }
 
-func parseFile(path string) (chan *PageReq, error) {
+func ParseFile(path string) (chan *PageReq, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -36,8 +37,10 @@ func parseDaemon (f *os.File, ch chan *PageReq) {
 		line := scanner.Text()
 		req := PageReq{}
 		err := json.Unmarshal([]byte(line), &req.Objs)
-		if err != nil {
+		if err == nil {
 			ch <- &req
+		} else {
+			fmt.Println(err)
 		}
 	}
 

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/Onmysofa/pagelevelcache/evaluate"
+	"github.com/Onmysofa/pagelevelcache/parse"
 )
 
 func main() {
@@ -33,10 +33,19 @@ func main() {
 	//	fmt.Println("")
 	//}
 
-	for t := 1; t < 6; t++ {
-		qps := evaluate.EvalGcache(1000000, 10000000, 10)
-		fmt.Printf("%v ", qps);
-	}
+	//for t := 1; t < 6; t++ {
+	//	qps := evaluate.EvalGcache(1000000, 10000000, 10)
+	//	fmt.Printf("%v ", qps);
+	//}
 
 	//evaluate.EvalGcache(1000, 1000000, 10)
+
+	ch, err := parse.ParseFile("/home/ruogu/Desktop/capstone/data/first1000.json")
+	if err != nil {
+		return
+	}
+
+	for req := range ch {
+		fmt.Println(req)
+	}
 }
