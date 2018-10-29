@@ -37,10 +37,9 @@ func insertUtilTrace(ch chan *parse.PageReq, insertFunc func (req *parse.PageReq
 
 	start := time.Now()
 
-	for i := 0; i < thread - 1; i++ {
+	for i := 0; i < thread; i++ {
 		go insertDaemonTrace(insertFunc, ch, endChan)
 	}
-
 
 	for i := 0; i < thread; i++ {
 		<- endChan

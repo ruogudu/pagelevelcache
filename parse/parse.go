@@ -39,8 +39,8 @@ func parseDaemon (f *os.File, ch chan *PageReq) {
 		req := PageReq{}
 		err := json.Unmarshal([]byte(line), &req.Objs)
 		if err == nil {
-			for _, o := range req.Objs {
-				o.Obj = make([]byte, o.Size, o.Size)
+			for i, o := range req.Objs {
+				req.Objs[i].Obj = make([]byte, o.Size, o.Size)
 			}
 			ch <- &req
 		} else {
