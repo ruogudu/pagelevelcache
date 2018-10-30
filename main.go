@@ -69,6 +69,7 @@ func funCalcSize(filename string) {
 		return
 	}
 
+	fmt.Print("Size sum:")
 	fmt.Println(calcSizeSum(ch))
 }
 
@@ -78,6 +79,7 @@ func funCalcNum(filename string) {
 		return
 	}
 
+	fmt.Print("Number:")
 	fmt.Println(calcNum(ch))
 }
 

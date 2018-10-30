@@ -36,6 +36,7 @@ func parseDaemon (f *os.File, ch chan *PageReq) {
 	scanner := bufio.NewScanner(f)
 	buf := make([]byte, 0, 64*1024)
 	scanner.Buffer(buf, 1024*1024)
+	cnt := 0
 	for scanner.Scan() {
 		line := scanner.Text()
 		req := PageReq{}
@@ -45,6 +46,11 @@ func parseDaemon (f *os.File, ch chan *PageReq) {
 				req.Objs[i].Obj = NewObject(o.Size)
 			}
 			ch <- &req
+			cnt++
+
+			if cnt % 10000 == 0 {
+				fmt.Println("Current:", cnt)
+			}
 
 		} else {
 			fmt.Println(err)
