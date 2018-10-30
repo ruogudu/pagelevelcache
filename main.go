@@ -69,8 +69,9 @@ func funCalcSize(filename string) {
 		return
 	}
 
+	res := calcSizeSum(ch)
 	fmt.Print("Size sum:")
-	fmt.Println(calcSizeSum(ch))
+	fmt.Println(res)
 }
 
 func funCalcNum(filename string) {
@@ -79,8 +80,9 @@ func funCalcNum(filename string) {
 		return
 	}
 
+	res := calcNum(ch)
 	fmt.Print("Number:")
-	fmt.Println(calcNum(ch))
+	fmt.Println(res)
 }
 
 func funBenchTrace() {
