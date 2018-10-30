@@ -70,7 +70,7 @@ func funCalcSize() {
 }
 
 func funCalcNum() {
-	ch, err := parse.ParseFile("/home/ruogu/Desktop/capstone/data/first100000.json")
+	ch, err := parse.ParseFile("/home/ruogu/Desktop/capstone/data/trace_2018_03_06_24h.json")
 	if err != nil {
 		return
 	}
@@ -91,11 +91,11 @@ func funBenchTrace() {
 
 }
 
-func calcSizeSum(ch chan *parse.PageReq) int {
-	sum := 0
+func calcSizeSum(ch chan *parse.PageReq) int64 {
+	var sum int64 = 0
 	for r := range ch {
 		for _, o := range r.Objs {
-			sum += o.Size
+			sum += int64(o.Size)
 		}
 	}
 
