@@ -24,7 +24,7 @@ func ParseFile(path string) (chan *PageReq, error) {
 		return nil, err
 	}
 
-	ch := make (chan *PageReq, 1000)
+	ch := make(chan *PageReq, 1000)
 	go parseDaemon(f, ch)
 
 	return ch, nil
@@ -34,6 +34,8 @@ func parseDaemon (f *os.File, ch chan *PageReq) {
 	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
+	buf := make([]byte, 0, 64*1024)
+	scanner.Buffer(buf, 1024*1024)
 	for scanner.Scan() {
 		line := scanner.Text()
 		req := PageReq{}
@@ -43,10 +45,10 @@ func parseDaemon (f *os.File, ch chan *PageReq) {
 				req.Objs[i].Obj = NewObject(o.Size)
 			}
 			ch <- &req
+
 		} else {
 			fmt.Println(err)
 		}
 	}
-
 	close(ch)
 }

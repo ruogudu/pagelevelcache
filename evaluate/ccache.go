@@ -30,7 +30,11 @@ func EvalCcacheTrace(ch chan *parse.PageReq, size int64, num int, itemsPruning u
 			cReqs[i] = &ccache_page.Request{o.Backend, o.Uri, o.Obj}
 		}
 
-		cache.SetPage(cReqs, ttl)
+		res := cache.GetPage(cReqs)
+
+		if res == nil {
+			cache.SetPage(cReqs, ttl)
+		}
 	}
 
 	return insertUtilTrace(ch, ins, num, thread, "CcacheTrace")
