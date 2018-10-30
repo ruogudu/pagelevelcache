@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Onmysofa/pagelevelcache/evaluate"
 	"github.com/Onmysofa/pagelevelcache/parse"
+	"os"
 	"time"
 )
 
@@ -55,13 +56,15 @@ func main() {
 
 	//parse.ParititionFile("/home/ruogu/Desktop/capstone/data/trace_2018_03_06_24h.json", 8)
 
+	argsWithoutProg := os.Args[1:]
 
-	funCalcNum()
+	funCalcNum(argsWithoutProg[0])
+	funCalcSize(argsWithoutProg[0])
 
 }
 
-func funCalcSize() {
-	ch, err := parse.ParseFile("/home/ruogu/Desktop/capstone/data/trace_2018_03_06_24h.json")
+func funCalcSize(filename string) {
+	ch, err := parse.ParseFile(filename)
 	if err != nil {
 		return
 	}
@@ -69,8 +72,8 @@ func funCalcSize() {
 	fmt.Println(calcSizeSum(ch))
 }
 
-func funCalcNum() {
-	ch, err := parse.ParseFile("/home/ruogu/Desktop/capstone/data/trace_2018_03_06_24h.json")
+func funCalcNum(filename string) {
+	ch, err := parse.ParseFile(filename)
 	if err != nil {
 		return
 	}
