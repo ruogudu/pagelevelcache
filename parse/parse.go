@@ -11,7 +11,7 @@ type ObjReq struct {
 	Backend uint64
 	Size int
 	Uri uint64
-	Obj []byte
+	Obj interface{}
 }
 
 type PageReq struct {
@@ -40,7 +40,7 @@ func parseDaemon (f *os.File, ch chan *PageReq) {
 		err := json.Unmarshal([]byte(line), &req.Objs)
 		if err == nil {
 			for i, o := range req.Objs {
-				req.Objs[i].Obj = make([]byte, o.Size, o.Size)
+				req.Objs[i].Obj = NewObject(o.Size)
 			}
 			ch <- &req
 		} else {
