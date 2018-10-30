@@ -2,13 +2,13 @@ package parse
 
 
 type ObjAlias struct {
-	Val []byte
+	size int64
 }
 
 func NewObject(size int) *ObjAlias {
-	return &ObjAlias{Val:make([]byte, size, size)}
+	return &ObjAlias{size: int64(size)}
 }
 
 func (o *ObjAlias) Size() int64 {
-	return int64(len(o.Val))
+	return o.size
 }
