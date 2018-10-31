@@ -58,8 +58,7 @@ func main() {
 
 	argsWithoutProg := os.Args[1:]
 
-	funCalcNum(argsWithoutProg[0])
-	funCalcSize(argsWithoutProg[0])
+	funBenchTrace(argsWithoutProg[0])
 
 }
 
@@ -85,14 +84,14 @@ func funCalcNum(filename string) {
 	fmt.Println(res)
 }
 
-func funBenchTrace() {
-	ch, err := parse.ParseFile("/home/ruogu/Desktop/capstone/data/first100000.json")
+func funBenchTrace(filename string) {
+	ch, err := parse.ParseFile(filename)
 	if err != nil {
 		return
 	}
 
 	size := 50000000
-	qps := evaluate.EvalCcacheTrace(ch, int64(size), 100000, 100, time.Minute * 10, 10)
+	qps := evaluate.EvalCcacheTrace(ch, int64(size), 100000, 100, time.Minute * 10, 8)
 	fmt.Printf("%v ", qps);
 	fmt.Println("")
 
