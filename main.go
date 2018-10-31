@@ -74,8 +74,7 @@ func funCalcSize(filename string) {
 	}
 
 	res := calcSizeSum(ch)
-	fmt.Print("Size sum:")
-	fmt.Println(res)
+	fmt.Print("Size sum: ", res)
 }
 
 func funCalcNum(filename string) {
@@ -84,9 +83,15 @@ func funCalcNum(filename string) {
 		return
 	}
 
+	start := time.Now()
+
 	res := calcNum(ch)
-	fmt.Print("Number:")
-	fmt.Println(res)
+
+	duration := time.Now().Sub(start)
+	qps := float64(res)/ duration.Seconds()
+
+	fmt.Println("Number: ", res)
+	fmt.Println("QPS: ", qps)
 }
 
 func funBenchTrace(filename string, size int64, threads int) {
