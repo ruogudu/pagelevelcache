@@ -5,6 +5,7 @@ import (
 	"github.com/Onmysofa/pagelevelcache/evaluate"
 	"github.com/Onmysofa/pagelevelcache/parse"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -57,8 +58,12 @@ func main() {
 	//parse.ParititionFile("/home/ruogu/Desktop/capstone/data/trace_2018_03_06_24h.json", 8)
 
 	argsWithoutProg := os.Args[1:]
-
-	funBenchTrace(argsWithoutProg[0])
+	size, err := strconv.ParseInt(argsWithoutProg[1], 10, 64)
+	if err != nil {
+		return
+	}
+	threads, err := strconv.ParseInt(argsWithoutProg[2], 10, 64)
+	funBenchTrace(argsWithoutProg[0], size, int(threads))
 
 }
 
@@ -84,14 +89,13 @@ func funCalcNum(filename string) {
 	fmt.Println(res)
 }
 
-func funBenchTrace(filename string) {
+func funBenchTrace(filename string, size int64, threads int) {
 	ch, err := parse.ParseFile(filename)
 	if err != nil {
 		return
 	}
 
-	size := 50000000000
-	qps := evaluate.EvalCcacheTrace(ch, int64(size), 100000, 100, time.Minute * 10, 8)
+	qps := evaluate.EvalCcacheTrace(ch, int64(size), 100000, 100, time.Minute * 10, threads)
 	fmt.Printf("%v ", qps);
 	fmt.Println("")
 
