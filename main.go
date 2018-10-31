@@ -108,8 +108,9 @@ func funBenchTrace(filename string, size int64, threads int) {
 		return
 	}
 
-	fmt.Println("Wait 5s for parsing")
-	time.Sleep(5 * time.Second)
+	fmt.Print("Wait 30s for parsing...")
+	time.Sleep(30 * time.Second)
+	fmt.Println("")
 
 	qps := evaluate.EvalCcacheTrace(ch, size, num, 100, time.Minute * 10, threads)
 	fmt.Printf("%v ", qps);
