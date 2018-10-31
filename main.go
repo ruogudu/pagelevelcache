@@ -64,8 +64,6 @@ func main() {
 	}
 	threads, err := strconv.ParseInt(argsWithoutProg[2], 10, 64)
 	funBenchTrace(argsWithoutProg[0], size, int(threads))
-
-	funCalcNum(argsWithoutProg[0])
 }
 
 func funCalcSize(filename string) {
@@ -103,6 +101,12 @@ func funBenchTrace(filename string, size int64, threads int) {
 
 	fmt.Println("Size: ", size, " Threads: ", threads)
 	num := calcNum(ch)
+
+	ch, err = parse.ParseFile(filename)
+	if err != nil {
+		return
+	}
+
 	qps := evaluate.EvalCcacheTrace(ch, size, num, 100, time.Minute * 10, threads)
 	fmt.Printf("%v ", qps);
 	fmt.Println("")
