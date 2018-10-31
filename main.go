@@ -102,7 +102,8 @@ func funBenchTrace(filename string, size int64, threads int) {
 	}
 
 	fmt.Println("Size: ", size, " Threads: ", threads)
-	qps := evaluate.EvalCcacheTrace(ch, size, 100000, 100, time.Minute * 10, threads)
+	num := calcNum(ch)
+	qps := evaluate.EvalCcacheTrace(ch, size, num, 100, time.Minute * 10, threads)
 	fmt.Printf("%v ", qps);
 	fmt.Println("")
 

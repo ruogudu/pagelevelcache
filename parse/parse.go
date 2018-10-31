@@ -48,9 +48,9 @@ func parseDaemon (f *os.File, ch chan *PageReq) {
 			ch <- &req
 			cnt++
 
-			if cnt % 10000 == 0 {
-				fmt.Println("Current:", cnt)
-			}
+			//if cnt % 10000 == 0 {
+			//	fmt.Println("Current:", cnt)
+			//}
 
 		} else {
 			fmt.Println(err)
