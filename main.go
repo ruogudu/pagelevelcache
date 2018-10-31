@@ -90,7 +90,7 @@ func funBenchTrace(filename string) {
 		return
 	}
 
-	size := 50000000
+	size := 50000000000
 	qps := evaluate.EvalCcacheTrace(ch, int64(size), 100000, 100, time.Minute * 10, 8)
 	fmt.Printf("%v ", qps);
 	fmt.Println("")
