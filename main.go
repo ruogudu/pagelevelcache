@@ -101,11 +101,15 @@ func funBenchTrace(filename string, size int64, threads int) {
 
 	fmt.Println("Size: ", size, " Threads: ", threads)
 	num := calcNum(ch)
+	fmt.Println("Num: ", num)
 
 	ch, err = parse.ParseFile(filename)
 	if err != nil {
 		return
 	}
+
+	fmt.Println("Wait 5s for parsing")
+	time.Sleep(5 * time.Second)
 
 	qps := evaluate.EvalCcacheTrace(ch, size, num, 100, time.Minute * 10, threads)
 	fmt.Printf("%v ", qps);

@@ -24,7 +24,7 @@ func ParseFile(path string) (chan *PageReq, error) {
 		return nil, err
 	}
 
-	ch := make(chan *PageReq, 1000)
+	ch := make(chan *PageReq, 1000000)
 	go parseDaemon(f, ch)
 
 	return ch, nil
