@@ -56,5 +56,6 @@ func parseDaemon (f *os.File, ch chan *PageReq) {
 			fmt.Println(err)
 		}
 	}
+	fmt.Println("Parse finish, num: ", cnt)
 	close(ch)
 }
