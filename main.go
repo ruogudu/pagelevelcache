@@ -67,24 +67,24 @@ func main() {
 }
 
 func funCalcSize(filename string) {
-	ch, err := parse.ParseFile(filename)
+	chs, err := parse.ParseFile(filename, 1)
 	if err != nil {
 		return
 	}
 
-	res := calcSizeSum(ch)
+	res := calcSizeSum(chs[0])
 	fmt.Print("Size sum: ", res)
 }
 
 func funCalcNum(filename string) {
-	ch, err := parse.ParseFile(filename)
+	chs, err := parse.ParseFile(filename, 0)
 	if err != nil {
 		return
 	}
 
 	start := time.Now()
 
-	res := calcNum(ch)
+	res := calcNum(chs[0])
 
 	duration := time.Now().Sub(start)
 	qps := float64(res)/ duration.Seconds()
@@ -94,16 +94,16 @@ func funCalcNum(filename string) {
 }
 
 func funBenchTrace(filename string, size int64, threads int) {
-	ch, err := parse.ParseFile(filename)
+	chs, err := parse.ParseFile(filename, 1)
 	if err != nil {
 		return
 	}
 
 	fmt.Println("Size: ", size, " Threads: ", threads)
-	num := calcNum(ch)
+	num := calcNum(chs[0])
 	fmt.Println("Num: ", num)
 
-	ch, err = parse.ParseFile(filename)
+	chs, err = parse.ParseFile(filename, threads)
 	if err != nil {
 		return
 	}
@@ -112,7 +112,7 @@ func funBenchTrace(filename string, size int64, threads int) {
 	time.Sleep(120 * time.Second)
 	fmt.Println("")
 
-	qps := evaluate.EvalCcacheTrace(ch, size, num, 100, time.Minute * 10, threads)
+	qps := evaluate.EvalCcacheTrace(chs, size, num, 100, time.Minute * 10, threads)
 	fmt.Printf("%v ", qps);
 	fmt.Println("")
 

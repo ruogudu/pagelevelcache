@@ -18,25 +18,29 @@ type PageReq struct {
 	Objs []ObjReq
 }
 
-func ParseFile(path string) (chan *PageReq, error) {
+func ParseFile(path string, num int) ([] chan*PageReq, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 
-	ch := make(chan *PageReq, 1000000)
-	go parseDaemon(f, ch)
+	chs := make([]chan *PageReq, num, num)
+	for i := range chs {
+		chs[i] = make(chan *PageReq, 1000000)
+	}
+	go parseDaemon(f, chs)
 
-	return ch, nil
+	return chs, nil
 }
 
-func parseDaemon (f *os.File, ch chan *PageReq) {
+func parseDaemon (f *os.File, chs []chan *PageReq) {
 	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
 	buf := make([]byte, 0, 64*1024)
 	scanner.Buffer(buf, 1024*1024)
 	cnt := 0
+	num := len(chs)
 	for scanner.Scan() {
 		line := scanner.Text()
 		req := PageReq{}
@@ -45,7 +49,7 @@ func parseDaemon (f *os.File, ch chan *PageReq) {
 			for i, o := range req.Objs {
 				req.Objs[i].Obj = NewObject(o.Size)
 			}
-			ch <- &req
+			chs[cnt % num] <- &req
 			cnt++
 
 			//if cnt % 10000 == 0 {
@@ -56,6 +60,8 @@ func parseDaemon (f *os.File, ch chan *PageReq) {
 			fmt.Println(err)
 		}
 	}
-	fmt.Println("Parse finish, num: ", cnt)
-	close(ch)
+	fmt.Println("Parse finished, num: ", cnt)
+	for _, ch := range chs {
+		close(ch)
+	}
 }

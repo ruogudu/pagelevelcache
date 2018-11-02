@@ -32,13 +32,13 @@ func insertUtil(insertFunc func (key, val string), num int, thread int, algo str
 	return qps
 }
 
-func insertUtilTrace(ch chan *parse.PageReq, insertFunc func (req *parse.PageReq), num int, thread int, algo string) float64 {
+func insertUtilTrace(chs []chan *parse.PageReq, insertFunc func (req *parse.PageReq), num int, thread int, algo string) float64 {
 	endChan := make (chan interface{}, thread + 1)
 
 	start := time.Now()
 
 	for i := 0; i < thread; i++ {
-		go insertDaemonTrace(insertFunc, ch, endChan)
+		go insertDaemonTrace(insertFunc, chs[i], endChan)
 	}
 
 	for i := 0; i < thread; i++ {

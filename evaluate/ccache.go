@@ -18,7 +18,7 @@ func EvalCcachePage(size int64, num int, itemsPruning uint32, ttl time.Duration,
 	return insertUtil(ins, num, thread, "Ccache")
 }
 
-func EvalCcacheTrace(ch chan *parse.PageReq, size int64, num int, itemsPruning uint32, ttl time.Duration, thread int) float64 {
+func EvalCcacheTrace(chs []chan *parse.PageReq, size int64, num int, itemsPruning uint32, ttl time.Duration, thread int) float64 {
 
 	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(64).Candidates(32))
 
@@ -37,7 +37,7 @@ func EvalCcacheTrace(ch chan *parse.PageReq, size int64, num int, itemsPruning u
 		}
 	}
 
-	return insertUtilTrace(ch, ins, num, thread, "CcacheTrace")
+	return insertUtilTrace(chs, ins, num, thread, "CcacheTrace")
 }
 
 func EvalCcache(size int64, num int, itemsPruning uint32, ttl time.Duration, thread int) float64 {
