@@ -9,7 +9,7 @@ import (
 
 func EvalCcachePage(size int64, num int, itemsPruning uint32, ttl time.Duration, thread int) float64 {
 
-	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(64).Candidates(32))
+	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(128).Candidates(32))
 
 	ins := func (key, val string) {
 		cache.Set(key, val, ttl)
@@ -20,7 +20,7 @@ func EvalCcachePage(size int64, num int, itemsPruning uint32, ttl time.Duration,
 
 func EvalCcacheTrace(chs []chan *parse.PageReq, size int64, num int, itemsPruning uint32, ttl time.Duration, thread int) float64 {
 
-	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(64).Candidates(32))
+	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(128).Candidates(32))
 
 	ins := func (req *parse.PageReq) {
 
