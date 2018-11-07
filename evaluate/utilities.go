@@ -48,6 +48,7 @@ func insertUtilTrace(chs []chan *parse.PageReq, insertFunc func (req *parse.Page
 
 	for i := 0; i < thread; i++ {
 		<- endChan
+		timers[i].Report()
 	}
 
 	duration := time.Now().Sub(start)
