@@ -1,6 +1,8 @@
 package evaluate
 
 import (
+	"fmt"
+	"github.com/Onmysofa/ccache"
 	"github.com/Onmysofa/pagelevelcache/parse"
 	"strconv"
 	"time"
@@ -32,13 +34,16 @@ func insertUtil(insertFunc func (key, val string), num int, thread int, algo str
 	return qps
 }
 
-func insertUtilTrace(chs []chan *parse.PageReq, insertFunc func (req *parse.PageReq), num int, thread int, algo string) float64 {
-	endChan := make (chan interface{}, thread + 1)
+func insertUtilTrace(chs []chan *parse.PageReq, insertFunc func (req *parse.PageReq, t *ccache.RecursionTimer), num int, thread int, algo string) float64 {
+	endChan := make(chan interface{}, thread + 1)
 
 	start := time.Now()
 
+	timers := make([]*ccache.RecursionTimer, thread)
+
 	for i := 0; i < thread; i++ {
-		go insertDaemonTrace(insertFunc, chs[i], endChan)
+		timers[i] = ccache.NewRecursionTimer(fmt.Sprintf("Tid: %v", i))
+		go insertDaemonTrace(insertFunc, chs[i], endChan, timers[i])
 	}
 
 	for i := 0; i < thread; i++ {
@@ -59,9 +64,9 @@ func insertDaemon(insertFunc func (key, val string), start int, end int, endChan
 	endChan <- nil
 }
 
-func insertDaemonTrace(insertFunc func (req *parse.PageReq), ch chan *parse.PageReq, endChan chan interface {}) {
+func insertDaemonTrace(insertFunc func (req *parse.PageReq, t *ccache.RecursionTimer), ch chan *parse.PageReq, endChan chan interface {}, t *ccache.RecursionTimer) {
 	for req, ok := <- ch; ok; req, ok = <- ch {
-		insertFunc(req)
+		insertFunc(req, t)
 	}
 	endChan <- nil
 }

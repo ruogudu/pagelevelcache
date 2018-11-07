@@ -22,7 +22,7 @@ func EvalCcacheTrace(chs []chan *parse.PageReq, size int64, num int, itemsPrunin
 
 	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(128).Candidates(32))
 
-	ins := func (req *parse.PageReq) {
+	ins := func (req *parse.PageReq, t *ccache_page.RecursionTimer) {
 
 		cReqs := make([]*ccache_page.Request, len(req.Objs), len(req.Objs))
 
@@ -30,10 +30,10 @@ func EvalCcacheTrace(chs []chan *parse.PageReq, size int64, num int, itemsPrunin
 			cReqs[i] = &ccache_page.Request{o.Backend, o.Uri, o.Obj}
 		}
 
-		res := cache.GetPage(cReqs)
+		res := cache.GetPage(cReqs, t)
 
 		if res == nil {
-			cache.SetPage(cReqs, ttl)
+			cache.SetPage(cReqs, ttl, t)
 		}
 	}
 
