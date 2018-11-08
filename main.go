@@ -5,7 +5,6 @@ import (
 	"github.com/Onmysofa/pagelevelcache/evaluate"
 	"github.com/Onmysofa/pagelevelcache/parse"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -58,12 +57,13 @@ func main() {
 	//parse.ParititionFile("/home/ruogu/Desktop/capstone/data/trace_2018_03_06_24h.json", 8)
 
 	argsWithoutProg := os.Args[1:]
-	size, err := strconv.ParseInt(argsWithoutProg[1], 10, 64)
-	if err != nil {
-		return
-	}
-	threads, err := strconv.ParseInt(argsWithoutProg[2], 10, 64)
-	funBenchTrace(argsWithoutProg[0], size, int(threads))
+	//size, err := strconv.ParseInt(argsWithoutProg[1], 10, 64)
+	//if err != nil {
+	//	return
+	//}
+	//threads, err := strconv.ParseInt(argsWithoutProg[2], 10, 64)
+	//funBenchTrace(argsWithoutProg[0], size, int(threads))
+	funCalcUniqueSize(argsWithoutProg[0])
 }
 
 func funCalcSize(filename string) {
@@ -74,6 +74,16 @@ func funCalcSize(filename string) {
 
 	res := calcSizeSum(chs[0])
 	fmt.Print("Size sum: ", res)
+}
+
+func funCalcUniqueSize(filename string) {
+	chs, err := parse.ParseFile(filename, 1)
+	if err != nil {
+		return
+	}
+
+	res := calcUniqueSize(chs[0])
+	fmt.Print("Unique size sum: ", res)
 }
 
 func funCalcNum(filename string) {
@@ -123,6 +133,24 @@ func calcSizeSum(ch chan *parse.PageReq) int64 {
 	for r := range ch {
 		for _, o := range r.Objs {
 			sum += int64(o.Size)
+		}
+	}
+
+	return sum
+}
+
+func calcUniqueSize(ch chan *parse.PageReq) int64 {
+	var sum int64 = 0
+	m := make(map[string]bool)
+
+	for r := range ch {
+		for _, o := range r.Objs {
+			k := fmt.Sprintf("%v:%v", o.Backend, o.Uri)
+			_,ok := m[k]
+			if !ok {
+				sum += int64(o.Size)
+				m[k] = true
+			}
 		}
 	}
 
