@@ -57,14 +57,22 @@ func main() {
 
 	//parse.ParititionFile("/home/ruogu/Desktop/capstone/data/trace_2018_03_06_24h.json", 8)
 
+	//argsWithoutProg := os.Args[1:]
+	//size, err := strconv.ParseInt(argsWithoutProg[1], 10, 64)
+	//if err != nil {
+	//	return
+	//}
+	//threads, err := strconv.ParseInt(argsWithoutProg[2], 10, 64)
+	//funBenchTrace(argsWithoutProg[0], size, int(threads))
+	//funCalcUniqueSize(argsWithoutProg[0])
+
 	argsWithoutProg := os.Args[1:]
 	size, err := strconv.ParseInt(argsWithoutProg[1], 10, 64)
 	if err != nil {
 		return
 	}
-	threads, err := strconv.ParseInt(argsWithoutProg[2], 10, 64)
-	funBenchTrace(argsWithoutProg[0], size, int(threads))
-	//funCalcUniqueSize(argsWithoutProg[0])
+	granularity, err := strconv.ParseInt(argsWithoutProg[2], 10, 64)
+	funBenchTraceRatio(argsWithoutProg[0], int(granularity), size)
 }
 
 func funCalcSize(filename string) {
@@ -104,8 +112,8 @@ func funCalcNum(filename string) {
 	fmt.Println("QPS: ", qps)
 }
 
-func funBenchTrace(filename string, size int64, threads int) {
-	chs, err := parse.ParseFile(filename, 1)
+func funBenchTraceThroughtput(filename string, size int64, threads int) {
+	chs, err := parse.ParseFileWithoutValue(filename, 1)
 	if err != nil {
 		return
 	}
@@ -114,7 +122,7 @@ func funBenchTrace(filename string, size int64, threads int) {
 	num := calcNum(chs[0])
 	fmt.Println("Num: ", num)
 
-	chs, err = parse.ParseFile(filename, threads)
+	chs, err = parse.ParseFileWithoutValue(filename, threads)
 	if err != nil {
 		return
 	}
@@ -127,6 +135,16 @@ func funBenchTrace(filename string, size int64, threads int) {
 	fmt.Printf("%v ", qps);
 	fmt.Println("")
 
+}
+
+func funBenchTraceRatio(filename string, granularity int, size int64) {
+	chs, err := parse.ParseFileWithoutValue(filename, 1)
+	if err != nil {
+		return
+	}
+
+	ratio := evaluate.EvalCcacheRatio(chs[0], granularity, size,100, time.Minute * 10)
+	fmt.Printf("Ratio: %v\n ", ratio);
 }
 
 func calcSizeSum(ch chan *parse.PageReq) int64 {

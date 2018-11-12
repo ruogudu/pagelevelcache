@@ -1,6 +1,7 @@
 package evaluate
 
 import (
+	"fmt"
 	"github.com/Onmysofa/pagelevelcache/parse"
 	"strconv"
 	"time"
@@ -64,4 +65,25 @@ func insertDaemonTrace(insertFunc func (req *parse.PageReq), ch chan *parse.Page
 		insertFunc(req)
 	}
 	endChan <- nil
+}
+
+func hitRatioUtilTrace(ch chan *parse.PageReq, granularity int, insertFunc func (req *parse.PageReq) (int, int), algo string) float64 {
+
+	all := 0
+	hit := 0
+	next := granularity
+	for req, ok := <- ch; ok; req, ok = <- ch {
+		curAll, curHit := insertFunc(req)
+		all += curAll
+		hit += curHit
+
+		if all >= next {
+
+			fmt.Println("Report:", "All", all, "Hit", hit, "Ratio", float64(hit) / float64(all))
+
+			next += granularity
+		}
+	}
+
+	return float64(hit) / float64(all)
 }
