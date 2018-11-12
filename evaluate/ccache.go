@@ -69,7 +69,11 @@ func EvalCcacheRatio(ch chan *parse.PageReq, granularity int, size int64, itemsP
 
 		cache.SetPage(objsToSet, ttl)
 
-		return len(cReqs), len(cReqs)-len(objsToSet)
+		//return len(cReqs), len(cReqs)-len(objsToSet)
+		if len(objsToSet) == 0 {
+			return 1, 1
+		}
+		return 1, 0
 	}
 
 	return hitRatioUtilTrace(ch, granularity, ins,"CcacheTrace")
