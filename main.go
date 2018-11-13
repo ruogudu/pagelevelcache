@@ -71,7 +71,8 @@ func main() {
 	reportThresPtr := flag.Int("r", 300000, "Threshold when start to report")
 
 	ohrPtr := flag.Bool("o", false, "Calculate OHR")
-	phrPtr := flag.Bool("p", true, "Calculate PHR")
+	phrPtr := flag.Bool("p", false, "Calculate PHR")
+	uPtr := flag.Bool("u", false, "Calculate working set")
 
 	flag.Parse()
 
@@ -82,7 +83,9 @@ func main() {
 	if *phrPtr {
 		funBenchTracePHR(*tracePtr, *granularityPtr, *reportThresPtr, *sizePtr)
 	}
-
+	if *uPtr {
+		funCalcUniqueSize(*tracePtr)
+	}
 }
 
 func funCalcSize(filename string) {
