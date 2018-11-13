@@ -73,6 +73,7 @@ func main() {
 	ohrPtr := flag.Bool("o", false, "Calculate OHR")
 	phrPtr := flag.Bool("p", false, "Calculate PHR")
 	uPtr := flag.Bool("u", false, "Calculate working set")
+	cPtr := flag.Bool("c", false, "Count request number")
 
 	flag.Parse()
 
@@ -85,6 +86,9 @@ func main() {
 	}
 	if *uPtr {
 		funCalcUniqueSize(*tracePtr)
+	}
+	if *cPtr {
+		funCalcNum(*tracePtr)
 	}
 }
 
@@ -109,7 +113,7 @@ func funCalcUniqueSize(filename string) {
 }
 
 func funCalcNum(filename string) {
-	chs, err := parse.ParseFile(filename, 0)
+	chs, err := parse.ParseFile(filename, 1)
 	if err != nil {
 		return
 	}
