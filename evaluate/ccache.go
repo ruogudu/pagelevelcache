@@ -46,7 +46,7 @@ func EvalCcacheTrace(chs []chan *parse.PageReq, size int64, num int, itemsPrunin
 	return insertUtilTrace(chs, ins, num, thread, "CcacheTrace")
 }
 
-func EvalCcachePHR(ch chan *parse.PageReq, granularity int, algorithm string, size int64, itemsPruning uint32, ttl time.Duration) float64 {
+func EvalCcachePHR(ch chan *parse.PageReq, granularity int, reportThresold int, algorithm string, size int64, itemsPruning uint32, ttl time.Duration) float64 {
 
 	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(128).Candidates(32).EvalAlgorithm(algorithm))
 
@@ -109,10 +109,10 @@ func EvalCcachePHR(ch chan *parse.PageReq, granularity int, algorithm string, si
 		}
 	}
 
-	return hitRatioUtilTrace(ch, granularity, ins,"CcacheTrace")
+	return hitRatioUtilTrace(ch, granularity, reportThresold, ins,"CcacheTrace")
 }
 
-func EvalCcacheOHR(ch chan *parse.PageReq, granularity int, algorithm string, size int64, itemsPruning uint32, ttl time.Duration) float64 {
+func EvalCcacheOHR(ch chan *parse.PageReq, granularity int, reportThresold int, algorithm string, size int64, itemsPruning uint32, ttl time.Duration) float64 {
 
 	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(128).Candidates(32).EvalAlgorithm(algorithm))
 
@@ -168,7 +168,7 @@ func EvalCcacheOHR(ch chan *parse.PageReq, granularity int, algorithm string, si
 		}
 	}
 
-	return hitRatioUtilTrace(ch, granularity, ins,"CcacheTrace")
+	return hitRatioUtilTrace(ch, granularity, reportThresold, ins,"CcacheTrace")
 }
 
 func EvalCcache(size int64, num int, itemsPruning uint32, ttl time.Duration, thread int) float64 {

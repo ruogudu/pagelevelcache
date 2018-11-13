@@ -67,22 +67,28 @@ func insertDaemonTrace(insertFunc func (req *parse.PageReq), ch chan *parse.Page
 	endChan <- nil
 }
 
-func hitRatioUtilTrace(ch chan *parse.PageReq, granularity int, insertFunc func (req *parse.PageReq) (int, int), algo string) float64 {
+func hitRatioUtilTrace(ch chan *parse.PageReq, granularity int, reportThresold int, insertFunc func (req *parse.PageReq) (int, int), algo string) float64 {
 
 	all := 0
 	hit := 0
+	cnt := 0
 	next := granularity
 	for req, ok := <- ch; ok; req, ok = <- ch {
 		curAll, curHit := insertFunc(req)
-		all += curAll
-		hit += curHit
 
-		if all >= next {
+		cnt++
 
-			//fmt.Println("Report:", "All", all, "Hit", hit, "Ratio", float64(hit) / float64(all))
-			fmt.Printf("%.4v\n", float64(hit) / float64(all))
+		if cnt >= reportThresold {
+			all += curAll
+			hit += curHit
 
-			next += granularity
+			if all >= next {
+
+				//fmt.Println("Report:", "All", all, "Hit", hit, "Ratio", float64(hit) / float64(all))
+				fmt.Printf("%.4v\n", float64(hit) / float64(all))
+
+				next += granularity
+			}
 		}
 	}
 
