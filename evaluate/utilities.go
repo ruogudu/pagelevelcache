@@ -78,14 +78,14 @@ func hitRatioUtilTrace(ch chan *parse.PageReq, granularity int, reportThresold i
 
 		cnt++
 
-		if cnt >= reportThresold {
+		if cnt > reportThresold {
 			all += curAll
 			hit += curHit
 
 			if all >= next {
 
 				//fmt.Println("Report:", "All", all, "Hit", hit, "Ratio", float64(hit) / float64(all))
-				fmt.Printf("%.4v\n", float64(hit) / float64(all))
+				fmt.Printf("%v %v %v\n", cnt, all, hit)
 
 				next += granularity
 			}
