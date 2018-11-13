@@ -69,6 +69,7 @@ func main() {
 	sizePtr := flag.Int64("s", 5000000000, "The size of cache by byte")
 	granularityPtr := flag.Int("g", 30000, "The granularity to report")
 	reportThresPtr := flag.Int("r", 300000, "Threshold when start to report")
+	algoPtr := flag.String("a", "LFU", "Algorithm to test")
 
 	ohrPtr := flag.Bool("o", false, "Calculate OHR")
 	phrPtr := flag.Bool("p", false, "Calculate PHR")
@@ -78,11 +79,11 @@ func main() {
 	flag.Parse()
 
 	if *ohrPtr {
-		funBenchTraceOHR(*tracePtr, *granularityPtr, *reportThresPtr, *sizePtr)
+		funBenchTraceOHR(*tracePtr, *granularityPtr, *reportThresPtr, *algoPtr, *sizePtr)
 	}
 
 	if *phrPtr {
-		funBenchTracePHR(*tracePtr, *granularityPtr, *reportThresPtr, *sizePtr)
+		funBenchTracePHR(*tracePtr, *granularityPtr, *reportThresPtr, *algoPtr, *sizePtr)
 	}
 	if *uPtr {
 		funCalcUniqueSize(*tracePtr)
@@ -154,9 +155,10 @@ func funBenchTraceThroughtput(filename string, size int64, threads int) {
 
 }
 
-func funBenchTracePHR(filename string, granularity int, reportThreshold int, size int64) {
+func funBenchTracePHR(filename string, granularity int, reportThreshold int, algorithm string, size int64) {
 
 	fmt.Println("Trace:", filename)
+	fmt.Println("Algorithm:", algorithm)
 	fmt.Println("Granularity:", granularity)
 	fmt.Println("Report threshold:", reportThreshold)
 	fmt.Println("Cache size:", size)
@@ -166,13 +168,14 @@ func funBenchTracePHR(filename string, granularity int, reportThreshold int, siz
 		return
 	}
 
-	ratio := evaluate.EvalCcachePHR(chs[0], granularity, reportThreshold, "LFU", size,100, time.Minute * 10)
+	ratio := evaluate.EvalCcachePHR(chs[0], granularity, reportThreshold, algorithm, size,100, time.Minute * 10)
 	fmt.Printf("Ratio: %v\n ", ratio);
 }
 
-func funBenchTraceOHR(filename string, granularity int, reportThreshold int, size int64) {
+func funBenchTraceOHR(filename string, granularity int, reportThreshold int, algorithm string, size int64) {
 
 	fmt.Println("Trace:", filename)
+	fmt.Println("Algorithm:", algorithm)
 	fmt.Println("Granularity:", granularity)
 	fmt.Println("Report threshold:", reportThreshold)
 	fmt.Println("Cache size:", size)
@@ -182,7 +185,7 @@ func funBenchTraceOHR(filename string, granularity int, reportThreshold int, siz
 		return
 	}
 
-	ratio := evaluate.EvalCcacheOHR(chs[0], granularity, reportThreshold, "LFU", size,100, time.Minute * 10)
+	ratio := evaluate.EvalCcacheOHR(chs[0], granularity, reportThreshold, algorithm, size,100, time.Minute * 10)
 	fmt.Printf("Ratio: %v\n ", ratio);
 }
 
