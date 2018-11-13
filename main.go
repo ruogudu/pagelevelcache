@@ -1,11 +1,10 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/Onmysofa/pagelevelcache/evaluate"
 	"github.com/Onmysofa/pagelevelcache/parse"
-	"os"
-	"strconv"
 	"time"
 )
 
@@ -66,13 +65,23 @@ func main() {
 	//funBenchTrace(argsWithoutProg[0], size, int(threads))
 	//funCalcUniqueSize(argsWithoutProg[0])
 
-	argsWithoutProg := os.Args[1:]
-	size, err := strconv.ParseInt(argsWithoutProg[1], 10, 64)
-	if err != nil {
-		return
+	tracePtr := flag.String("t", "", "The trace to test against")
+	sizePtr := flag.Int64("s", 5000000000, "The size of cache by byte")
+	granularityPtr := flag.Int("g", 30000, "The granularity to report")
+
+	ohrPtr := flag.Bool("o", false, "Calculate OHR")
+	phrPtr := flag.Bool("p", true, "Calculate PHR")
+
+	flag.Parse()
+
+	if *ohrPtr {
+		funBenchTraceOHR(*tracePtr, *granularityPtr, *sizePtr)
 	}
-	granularity, err := strconv.ParseInt(argsWithoutProg[2], 10, 64)
-	funBenchTraceRatio(argsWithoutProg[0], int(granularity), size)
+
+	if *phrPtr {
+		funBenchTracePHR(*tracePtr, *granularityPtr, *sizePtr)
+	}
+
 }
 
 func funCalcSize(filename string) {
@@ -137,13 +146,33 @@ func funBenchTraceThroughtput(filename string, size int64, threads int) {
 
 }
 
-func funBenchTraceRatio(filename string, granularity int, size int64) {
+func funBenchTracePHR(filename string, granularity int, size int64) {
+
+	fmt.Println("Trace:", filename)
+	fmt.Println("Granularity:", granularity)
+	fmt.Println("Cache size:", size)
+	
 	chs, err := parse.ParseFileWithoutValue(filename, 1)
 	if err != nil {
 		return
 	}
 
-	ratio := evaluate.EvalCcacheRatio(chs[0], granularity, size,100, time.Minute * 10)
+	ratio := evaluate.EvalCcachePHR(chs[0], granularity, "LFU", size,100, time.Minute * 10)
+	fmt.Printf("Ratio: %v\n ", ratio);
+}
+
+func funBenchTraceOHR(filename string, granularity int, size int64) {
+
+	fmt.Println("Trace:", filename)
+	fmt.Println("Granularity:", granularity)
+	fmt.Println("Cache size:", size)
+
+	chs, err := parse.ParseFileWithoutValue(filename, 1)
+	if err != nil {
+		return
+	}
+
+	ratio := evaluate.EvalCcacheOHR(chs[0], granularity, "LFU", size,100, time.Minute * 10)
 	fmt.Printf("Ratio: %v\n ", ratio);
 }
 

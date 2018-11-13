@@ -4,6 +4,7 @@ import (
 	ccache_page "github.com/Onmysofa/ccache"
 	"github.com/Onmysofa/pagelevelcache/parse"
 	"github.com/karlseguin/ccache"
+	"strings"
 	"time"
 )
 
@@ -45,35 +46,126 @@ func EvalCcacheTrace(chs []chan *parse.PageReq, size int64, num int, itemsPrunin
 	return insertUtilTrace(chs, ins, num, thread, "CcacheTrace")
 }
 
-func EvalCcacheRatio(ch chan *parse.PageReq, granularity int, size int64, itemsPruning uint32, ttl time.Duration) float64 {
+func EvalCcachePHR(ch chan *parse.PageReq, granularity int, algorithm string, size int64, itemsPruning uint32, ttl time.Duration) float64 {
 
-	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(128).Candidates(32))
+	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(128).Candidates(32).EvalAlgorithm(algorithm))
 
-	ins := func (req *parse.PageReq) (all int, hit int) {
+	var ins func (req *parse.PageReq) (all int, hit int)
 
-		cReqs := make([]*ccache_page.Request, len(req.Objs), len(req.Objs))
+	if strings.Compare(strings.ToLower(algorithm), "h2") == 0 {
+		ins = func (req *parse.PageReq) (all int, hit int) {
 
-		for i, o := range req.Objs {
-			cReqs[i] = &ccache_page.Request{o.Backend, o.Uri, o.Obj}
-		}
+			cReqs := make([]*ccache_page.Request, len(req.Objs), len(req.Objs))
 
-		cache.GetPage(cReqs)
-
-		objsToSet := make([]*ccache_page.Request, 0, len(req.Objs))
-		for i, o := range cReqs {
-			if parse.IsNilObject(o.Obj) {
-				o.Obj = parse.NewObject(req.Objs[i].Size)
-				objsToSet = append(objsToSet, o)
+			for i, o := range req.Objs {
+				cReqs[i] = &ccache_page.Request{o.Backend, o.Uri, o.Obj}
 			}
-		}
 
-		cache.SetPage(objsToSet, ttl)
+			cache.GetPage(cReqs)
 
-		//return len(cReqs), len(cReqs)-len(objsToSet)
-		if len(objsToSet) == 0 {
-			return 1, 1
+			objsToSet := make([]*ccache_page.Request, 0, len(req.Objs))
+			missingSize := 0
+			for i, o := range cReqs {
+				if parse.IsNilObject(o.Obj) {
+					o.Obj = parse.NewObject(req.Objs[i].Size)
+					objsToSet = append(objsToSet, o)
+					missingSize += req.Objs[i].Size
+				}
+			}
+
+			cache.SetPageWithMissingSize(objsToSet, float64(missingSize), ttl)
+
+			if len(objsToSet) == 0 {
+				return 1, 1
+			}
+			return 1, 0
 		}
-		return 1, 0
+	} else {
+		ins = func (req *parse.PageReq) (all int, hit int) {
+
+			cReqs := make([]*ccache_page.Request, len(req.Objs), len(req.Objs))
+
+			for i, o := range req.Objs {
+				cReqs[i] = &ccache_page.Request{o.Backend, o.Uri, o.Obj}
+			}
+
+			cache.GetPage(cReqs)
+
+			objsToSet := make([]*ccache_page.Request, 0, len(req.Objs))
+			for i, o := range cReqs {
+				if parse.IsNilObject(o.Obj) {
+					o.Obj = parse.NewObject(req.Objs[i].Size)
+					objsToSet = append(objsToSet, o)
+				}
+			}
+
+			cache.SetPage(objsToSet, ttl)
+
+			//return len(cReqs), len(cReqs)-len(objsToSet)
+			if len(objsToSet) == 0 {
+				return 1, 1
+			}
+			return 1, 0
+		}
+	}
+
+	return hitRatioUtilTrace(ch, granularity, ins,"CcacheTrace")
+}
+
+func EvalCcacheOHR(ch chan *parse.PageReq, granularity int, algorithm string, size int64, itemsPruning uint32, ttl time.Duration) float64 {
+
+	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(128).Candidates(32).EvalAlgorithm(algorithm))
+
+	var ins func (req *parse.PageReq) (all int, hit int)
+
+	if strings.Compare(strings.ToLower(algorithm), "h2") == 0 {
+		ins = func (req *parse.PageReq) (all int, hit int) {
+
+			cReqs := make([]*ccache_page.Request, len(req.Objs), len(req.Objs))
+
+			for i, o := range req.Objs {
+				cReqs[i] = &ccache_page.Request{o.Backend, o.Uri, o.Obj}
+			}
+
+			cache.GetPage(cReqs)
+
+			objsToSet := make([]*ccache_page.Request, 0, len(req.Objs))
+			missingSize := 0
+			for i, o := range cReqs {
+				if parse.IsNilObject(o.Obj) {
+					o.Obj = parse.NewObject(req.Objs[i].Size)
+					objsToSet = append(objsToSet, o)
+					missingSize += req.Objs[i].Size
+				}
+			}
+
+			cache.SetPageWithMissingSize(objsToSet, float64(missingSize), ttl)
+
+			return len(cReqs), len(cReqs) - len(objsToSet)
+		}
+	} else {
+		ins = func (req *parse.PageReq) (all int, hit int) {
+
+			cReqs := make([]*ccache_page.Request, len(req.Objs), len(req.Objs))
+
+			for i, o := range req.Objs {
+				cReqs[i] = &ccache_page.Request{o.Backend, o.Uri, o.Obj}
+			}
+
+			cache.GetPage(cReqs)
+
+			objsToSet := make([]*ccache_page.Request, 0, len(req.Objs))
+			for i, o := range cReqs {
+				if parse.IsNilObject(o.Obj) {
+					o.Obj = parse.NewObject(req.Objs[i].Size)
+					objsToSet = append(objsToSet, o)
+				}
+			}
+
+			cache.SetPage(objsToSet, ttl)
+
+			return len(cReqs), len(cReqs)-len(objsToSet)
+		}
 	}
 
 	return hitRatioUtilTrace(ch, granularity, ins,"CcacheTrace")
