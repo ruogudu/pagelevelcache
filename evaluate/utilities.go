@@ -72,7 +72,7 @@ func hitRatioUtilTrace(ch chan *parse.PageReq, granularity int, reportThresold i
 	all := 0
 	hit := 0
 	cnt := 0
-	next := granularity
+	next := reportThresold + granularity
 	for req, ok := <- ch; ok; req, ok = <- ch {
 		curAll, curHit := insertFunc(req)
 
@@ -82,12 +82,12 @@ func hitRatioUtilTrace(ch chan *parse.PageReq, granularity int, reportThresold i
 			all += curAll
 			hit += curHit
 
-			if all >= next {
+			if cnt >= next {
 
 				//fmt.Println("Report:", "All", all, "Hit", hit, "Ratio", float64(hit) / float64(all))
 				fmt.Printf("%v\t%v\t%v\n", cnt, all, hit)
 
-				next += granularity
+				cnt += granularity
 			}
 		}
 	}
