@@ -70,6 +70,8 @@ func main() {
 	granularityPtr := flag.Int("g", 30000, "The granularity to report")
 	reportThresPtr := flag.Int("r", 300000, "Threshold when start to report")
 	algoPtr := flag.String("a", "LFU", "Algorithm to test")
+	bucketPtr := flag.Int("b", 128, "Bucket number")
+	samplePtr := flag.Int("m", 32, "Sample number")
 
 	ohrPtr := flag.Bool("o", false, "Calculate OHR")
 	phrPtr := flag.Bool("p", false, "Calculate PHR")
@@ -155,7 +157,7 @@ func funBenchTraceThroughtput(filename string, size int64, threads int) {
 
 }
 
-func funBenchTracePHR(filename string, granularity int, reportThreshold int, algorithm string, size int64) {
+func funBenchTracePHR(filename string, granularity int, reportThreshold int, algorithm string, size int64, buckets int, samplenum int) {
 
 	fmt.Println("Trace:", filename)
 	fmt.Println("Algorithm:", algorithm)
@@ -168,11 +170,11 @@ func funBenchTracePHR(filename string, granularity int, reportThreshold int, alg
 		return
 	}
 
-	ratio := evaluate.EvalCcachePHR(chs[0], granularity, reportThreshold, algorithm, size,100, time.Minute * 10)
+	ratio := evaluate.EvalCcachePHR(chs[0], granularity, reportThreshold, algorithm, size, buckets, samplenum, 100, time.Minute * 10)
 	fmt.Printf("Ratio: %v\n ", ratio);
 }
 
-func funBenchTraceOHR(filename string, granularity int, reportThreshold int, algorithm string, size int64) {
+func funBenchTraceOHR(filename string, granularity int, reportThreshold int, algorithm string, size int64, buckets int, samplenum int) {
 
 	fmt.Println("Trace:", filename)
 	fmt.Println("Algorithm:", algorithm)
@@ -185,7 +187,7 @@ func funBenchTraceOHR(filename string, granularity int, reportThreshold int, alg
 		return
 	}
 
-	ratio := evaluate.EvalCcacheOHR(chs[0], granularity, reportThreshold, algorithm, size,100, time.Minute * 10)
+	ratio := evaluate.EvalCcacheOHR(chs[0], granularity, reportThreshold, algorithm, size, buckets, samplenum,100, time.Minute * 10)
 	fmt.Printf("Ratio: %v\n ", ratio);
 }
 
