@@ -81,11 +81,11 @@ func main() {
 	flag.Parse()
 
 	if *ohrPtr {
-		funBenchTraceOHR(*tracePtr, *granularityPtr, *reportThresPtr, *algoPtr, *sizePtr)
+		funBenchTraceOHR(*tracePtr, *granularityPtr, *reportThresPtr, *algoPtr, *sizePtr, *bucketPtr, *samplePtr)
 	}
 
 	if *phrPtr {
-		funBenchTracePHR(*tracePtr, *granularityPtr, *reportThresPtr, *algoPtr, *sizePtr)
+		funBenchTracePHR(*tracePtr, *granularityPtr, *reportThresPtr, *algoPtr, *sizePtr, *bucketPtr, *samplePtr)
 	}
 	if *uPtr {
 		funCalcUniqueSize(*tracePtr)
