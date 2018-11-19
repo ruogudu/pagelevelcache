@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-var items uint32 = 10
-
 func main() {
 
 	tracePtr := flag.String("t", "", "The trace to test against")
@@ -20,6 +18,7 @@ func main() {
 	bucketPtr := flag.Int("b", 128, "Bucket number")
 	samplePtr := flag.Int("m", 32, "Sample number")
 	threadPtr := flag.Int("n", 1, "Number of threads")
+	itemsPtr := flag.Int("i", 10, "Number of items evicted each time")
 
 	ohrPtr := flag.Bool("o", false, "Calculate OHR")
 	phrPtr := flag.Bool("p", false, "Calculate PHR")
@@ -30,11 +29,11 @@ func main() {
 	flag.Parse()
 
 	if *ohrPtr {
-		funBenchTraceOHR(*tracePtr, *granularityPtr, *reportThresPtr, *algoPtr, *sizePtr, *bucketPtr, *samplePtr)
+		funBenchTraceOHR(*tracePtr, *granularityPtr, *reportThresPtr, *algoPtr, *sizePtr, *bucketPtr, *samplePtr, *itemsPtr)
 	}
 
 	if *phrPtr {
-		funBenchTracePHR(*tracePtr, *granularityPtr, *reportThresPtr, *algoPtr, *sizePtr, *bucketPtr, *samplePtr)
+		funBenchTracePHR(*tracePtr, *granularityPtr, *reportThresPtr, *algoPtr, *sizePtr, *bucketPtr, *samplePtr, *itemsPtr)
 	}
 	if *uPtr {
 		funCalcUniqueSize(*tracePtr)
@@ -43,7 +42,7 @@ func main() {
 		funCalcNum(*tracePtr)
 	}
 	if *evalPtr {
-		funBenchTraceThroughtput(*tracePtr, *algoPtr, *sizePtr, *threadPtr)
+		funBenchTraceThroughtput(*tracePtr, *algoPtr, *sizePtr, *threadPtr, *itemsPtr)
 	}
 }
 
@@ -84,7 +83,7 @@ func funCalcNum(filename string) {
 	fmt.Println("QPS: ", qps)
 }
 
-func funBenchTraceThroughtput(filename string, algorithm string, size int64, threads int) {
+func funBenchTraceThroughtput(filename string, algorithm string, size int64, threads int, pruningItems int) {
 	chs, err := parse.ParseFileWithoutValue(filename, 1)
 	if err != nil {
 		return
@@ -103,13 +102,13 @@ func funBenchTraceThroughtput(filename string, algorithm string, size int64, thr
 	time.Sleep(60 * time.Second)
 	fmt.Println("")
 
-	qps := evaluate.EvalCcacheTrace(chs, algorithm, size, num, items, time.Minute * 10, threads)
+	qps := evaluate.EvalCcacheTrace(chs, algorithm, size, num, uint32(pruningItems), time.Minute * 10, threads)
 	fmt.Printf("%v ", qps);
 	fmt.Println("")
 
 }
 
-func funBenchTracePHR(filename string, granularity int, reportThreshold int, algorithm string, size int64, buckets int, samplenum int) {
+func funBenchTracePHR(filename string, granularity int, reportThreshold int, algorithm string, size int64, buckets int, samplenum int, pruningItems int) {
 
 	fmt.Println("Trace:", filename)
 	fmt.Println("Algorithm:", algorithm)
@@ -122,11 +121,11 @@ func funBenchTracePHR(filename string, granularity int, reportThreshold int, alg
 		return
 	}
 
-	ratio := evaluate.EvalCcachePHR(chs[0], granularity, reportThreshold, algorithm, size, buckets, samplenum, items, time.Minute * 10)
+	ratio := evaluate.EvalCcachePHR(chs[0], granularity, reportThreshold, algorithm, size, buckets, samplenum, uint32(pruningItems), time.Minute * 10)
 	fmt.Printf("Ratio: %v\n ", ratio);
 }
 
-func funBenchTraceOHR(filename string, granularity int, reportThreshold int, algorithm string, size int64, buckets int, samplenum int) {
+func funBenchTraceOHR(filename string, granularity int, reportThreshold int, algorithm string, size int64, buckets int, samplenum int, pruningItems int) {
 
 	fmt.Println("Trace:", filename)
 	fmt.Println("Algorithm:", algorithm)
@@ -139,7 +138,7 @@ func funBenchTraceOHR(filename string, granularity int, reportThreshold int, alg
 		return
 	}
 
-	ratio := evaluate.EvalCcacheOHR(chs[0], granularity, reportThreshold, algorithm, size, buckets, samplenum,items, time.Minute * 10)
+	ratio := evaluate.EvalCcacheOHR(chs[0], granularity, reportThreshold, algorithm, size, buckets, samplenum, uint32(pruningItems), time.Minute * 10)
 	fmt.Printf("Ratio: %v\n ", ratio);
 }
 
