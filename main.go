@@ -19,11 +19,13 @@ func main() {
 	algoPtr := flag.String("a", "LFU", "Algorithm to test")
 	bucketPtr := flag.Int("b", 128, "Bucket number")
 	samplePtr := flag.Int("m", 32, "Sample number")
+	threadPtr := flag.Int("n", 1, "Number of threads")
 
 	ohrPtr := flag.Bool("o", false, "Calculate OHR")
 	phrPtr := flag.Bool("p", false, "Calculate PHR")
 	uPtr := flag.Bool("u", false, "Calculate working set")
 	cPtr := flag.Bool("c", false, "Count request number")
+	evalPtr := flag.Bool("e", false, "Evaluate throughput")
 
 	flag.Parse()
 
@@ -39,6 +41,9 @@ func main() {
 	}
 	if *cPtr {
 		funCalcNum(*tracePtr)
+	}
+	if *evalPtr {
+		funBenchTraceThroughtput(*tracePtr, *algoPtr, *sizePtr, *threadPtr)
 	}
 }
 
@@ -79,7 +84,7 @@ func funCalcNum(filename string) {
 	fmt.Println("QPS: ", qps)
 }
 
-func funBenchTraceThroughtput(filename string, size int64, threads int) {
+func funBenchTraceThroughtput(filename string, algorithm string, size int64, threads int) {
 	chs, err := parse.ParseFileWithoutValue(filename, 1)
 	if err != nil {
 		return
@@ -98,7 +103,7 @@ func funBenchTraceThroughtput(filename string, size int64, threads int) {
 	time.Sleep(60 * time.Second)
 	fmt.Println("")
 
-	qps := evaluate.EvalCcacheTrace(chs, size, num, items, time.Minute * 10, threads)
+	qps := evaluate.EvalCcacheTrace(chs, algorithm, size, num, items, time.Minute * 10, threads)
 	fmt.Printf("%v ", qps);
 	fmt.Println("")
 

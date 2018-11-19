@@ -19,28 +19,57 @@ func EvalCcachePage(size int64, num int, itemsPruning uint32, ttl time.Duration,
 	return insertUtil(ins, num, thread, "Ccache")
 }
 
-func EvalCcacheTrace(chs []chan *parse.PageReq, size int64, num int, itemsPruning uint32, ttl time.Duration, thread int) float64 {
+func EvalCcacheTrace(chs []chan *parse.PageReq, algorithm string, size int64, num int, itemsPruning uint32, ttl time.Duration, thread int) float64 {
 
 	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(128).Candidates(32))
 
-	ins := func (req *parse.PageReq) {
+	var ins func (req *parse.PageReq)
 
-		cReqs := make([]*ccache_page.Request, len(req.Objs), len(req.Objs))
+	if strings.Compare(strings.ToLower(algorithm), "h2") == 0 {
+		ins = func (req *parse.PageReq) {
 
-		for i, o := range req.Objs {
-			cReqs[i] = &ccache_page.Request{o.Backend, o.Uri, o.Obj}
-		}
+			cReqs := make([]*ccache_page.Request, len(req.Objs), len(req.Objs))
 
-		cache.GetPage(cReqs)
-
-		objsToSet := make([]*ccache_page.Request, 0, len(req.Objs))
-		for _, o := range cReqs {
-			if parse.IsNilObject(o.Obj) {
-				objsToSet = append(objsToSet, o)
+			for i, o := range req.Objs {
+				cReqs[i] = &ccache_page.Request{o.Backend, o.Uri, o.Obj}
 			}
-		}
 
-		cache.SetPage(objsToSet, ttl)
+			cache.GetPage(cReqs)
+
+			objsToSet := make([]*ccache_page.Request, 0, len(req.Objs))
+			missingSize := 0
+			for i, o := range cReqs {
+				if parse.IsNilObject(o.Obj) {
+					o.Obj = parse.NewObject(req.Objs[i].Size)
+					objsToSet = append(objsToSet, o)
+					missingSize += req.Objs[i].Size
+				}
+			}
+
+			cache.SetPageWithMissingSize(objsToSet, float64(missingSize), ttl)
+		}
+	} else {
+		ins = func (req *parse.PageReq) {
+
+			cReqs := make([]*ccache_page.Request, len(req.Objs), len(req.Objs))
+
+			for i, o := range req.Objs {
+				cReqs[i] = &ccache_page.Request{o.Backend, o.Uri, o.Obj}
+			}
+
+			cache.GetPage(cReqs)
+
+			objsToSet := make([]*ccache_page.Request, 0, len(req.Objs))
+			for i, o := range cReqs {
+				if parse.IsNilObject(o.Obj) {
+					o.Obj = parse.NewObject(req.Objs[i].Size)
+					objsToSet = append(objsToSet, o)
+				}
+			}
+
+			cache.SetPage(objsToSet, ttl)
+
+		}
 	}
 
 	return insertUtilTrace(chs, ins, num, thread, "CcacheTrace")
