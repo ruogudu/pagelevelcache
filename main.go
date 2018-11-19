@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+var items uint32 = 10
+
 func main() {
 
 	tracePtr := flag.String("t", "", "The trace to test against")
@@ -96,7 +98,7 @@ func funBenchTraceThroughtput(filename string, size int64, threads int) {
 	time.Sleep(60 * time.Second)
 	fmt.Println("")
 
-	qps := evaluate.EvalCcacheTrace(chs, size, num, 100, time.Minute * 10, threads)
+	qps := evaluate.EvalCcacheTrace(chs, size, num, items, time.Minute * 10, threads)
 	fmt.Printf("%v ", qps);
 	fmt.Println("")
 
@@ -115,7 +117,7 @@ func funBenchTracePHR(filename string, granularity int, reportThreshold int, alg
 		return
 	}
 
-	ratio := evaluate.EvalCcachePHR(chs[0], granularity, reportThreshold, algorithm, size, buckets, samplenum, 100, time.Minute * 10)
+	ratio := evaluate.EvalCcachePHR(chs[0], granularity, reportThreshold, algorithm, size, buckets, samplenum, items, time.Minute * 10)
 	fmt.Printf("Ratio: %v\n ", ratio);
 }
 
@@ -132,7 +134,7 @@ func funBenchTraceOHR(filename string, granularity int, reportThreshold int, alg
 		return
 	}
 
-	ratio := evaluate.EvalCcacheOHR(chs[0], granularity, reportThreshold, algorithm, size, buckets, samplenum,100, time.Minute * 10)
+	ratio := evaluate.EvalCcacheOHR(chs[0], granularity, reportThreshold, algorithm, size, buckets, samplenum,items, time.Minute * 10)
 	fmt.Printf("Ratio: %v\n ", ratio);
 }
 
