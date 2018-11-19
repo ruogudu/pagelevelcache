@@ -75,9 +75,13 @@ func EvalCcacheTrace(chs []chan *parse.PageReq, algorithm string, size int64, nu
 	return insertUtilTrace(chs, ins, num, thread, "CcacheTrace")
 }
 
-func EvalCcachePHR(ch chan *parse.PageReq, granularity int, reportThresold int, algorithm string, size int64, buckets int, samplenum int, itemsPruning uint32, ttl time.Duration) float64 {
+func EvalCcachePHR(ch chan *parse.PageReq, granularity int, reportThresold int, algorithm string, size int64, buckets int, samplenum int, itemsPruning uint32, ad int64, ttl time.Duration) float64 {
 
-	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(uint32(buckets)).Candidates(samplenum).EvalAlgorithm(algorithm))
+	adPolicy := false
+	if ad > 0 {
+		adPolicy = true
+	}
+	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(uint32(buckets)).Candidates(samplenum).EvalAlgorithm(algorithm).AdmissionPolicy(adPolicy).AdmissionThres(ad))
 
 	var ins func (req *parse.PageReq) (all int, hit int)
 
@@ -141,9 +145,13 @@ func EvalCcachePHR(ch chan *parse.PageReq, granularity int, reportThresold int, 
 	return hitRatioUtilTrace(ch, granularity, reportThresold, ins,"CcacheTrace")
 }
 
-func EvalCcacheOHR(ch chan *parse.PageReq, granularity int, reportThresold int, algorithm string, size int64, buckets int, samplenum int, itemsPruning uint32, ttl time.Duration) float64 {
+func EvalCcacheOHR(ch chan *parse.PageReq, granularity int, reportThresold int, algorithm string, size int64, buckets int, samplenum int, itemsPruning uint32, ad int64, ttl time.Duration) float64 {
 
-	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(uint32(buckets)).Candidates(samplenum).EvalAlgorithm(algorithm))
+	adPolicy := false
+	if ad > 0 {
+		adPolicy = true
+	}
+	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(uint32(buckets)).Candidates(samplenum).EvalAlgorithm(algorithm).AdmissionPolicy(adPolicy).AdmissionThres(ad))
 
 	var ins func (req *parse.PageReq) (all int, hit int)
 
