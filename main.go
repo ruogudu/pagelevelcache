@@ -19,7 +19,7 @@ func main() {
 	samplePtr := flag.Int("m", 32, "Sample number")
 	threadPtr := flag.Int("n", 1, "Number of threads")
 	itemsPtr := flag.Int("i", 10, "Number of items evicted each time")
-	adPtr := flag.Int64("a", 0, "Admission threshold")
+	adPtr := flag.Int64("ad", 0, "Admission threshold")
 
 	ohrPtr := flag.Bool("o", false, "Calculate OHR")
 	phrPtr := flag.Bool("p", false, "Calculate PHR")
