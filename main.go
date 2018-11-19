@@ -89,7 +89,7 @@ func funBenchTraceThroughtput(filename string, algorithm string, size int64, thr
 		return
 	}
 
-	fmt.Println("Size: ", size, " Threads: ", threads)
+	fmt.Println("Size: ", size, " Threads: ", threads, "Pruning items: ", pruningItems)
 	num := calcNum(chs[0])
 	fmt.Println("Num: ", num)
 
@@ -115,6 +115,9 @@ func funBenchTracePHR(filename string, granularity int, reportThreshold int, alg
 	fmt.Println("Granularity:", granularity)
 	fmt.Println("Report threshold:", reportThreshold)
 	fmt.Println("Cache size:", size)
+	fmt.Println("Buckets:", buckets)
+	fmt.Println("Samples:", samplenum)
+	fmt.Println("Pruning items:", pruningItems)
 
 	chs, err := parse.ParseFileWithoutValue(filename, 1)
 	if err != nil {
@@ -132,6 +135,9 @@ func funBenchTraceOHR(filename string, granularity int, reportThreshold int, alg
 	fmt.Println("Granularity:", granularity)
 	fmt.Println("Report threshold:", reportThreshold)
 	fmt.Println("Cache size:", size)
+	fmt.Println("Buckets:", buckets)
+	fmt.Println("Samples:", samplenum)
+	fmt.Println("Pruning items:", pruningItems)
 
 	chs, err := parse.ParseFileWithoutValue(filename, 1)
 	if err != nil {
