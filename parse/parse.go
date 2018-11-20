@@ -104,7 +104,7 @@ func parseDaemonWithoutValue(f *os.File, chs []chan *PageReq) {
 			fmt.Println(err)
 		}
 	}
-	fmt.Println("Parse finished, num: ", cnt)
+	//fmt.Println("Parse finished, num: ", cnt)
 	for _, ch := range chs {
 		close(ch)
 	}
