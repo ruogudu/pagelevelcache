@@ -19,9 +19,14 @@ func EvalCcachePage(size int64, num int, itemsPruning uint32, ttl time.Duration,
 	return insertUtil(ins, num, thread, "Ccache")
 }
 
-func EvalCcacheTrace(chs []chan *parse.PageReq, algorithm string, size int64, num int, itemsPruning uint32, ttl time.Duration, thread int) float64 {
+func EvalCcacheTrace(chs []chan *parse.PageReq, algorithm string, size int64, buckets int, samplenum, num int, itemsPruning uint32, ttl time.Duration, thread int, ad int64) float64 {
 
-	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(128).Candidates(32))
+	adPolicy := false
+	if ad > 0 {
+		adPolicy = true
+	}
+
+	var cache = ccache_page.New(ccache_page.Configure().MaxSize(size).ItemsToPrune(itemsPruning).Buckets(uint32(buckets)).Candidates(samplenum).EvalAlgorithm(algorithm).AdmissionPolicy(adPolicy).AdmissionThres(ad))
 
 	var ins func (req *parse.PageReq)
 

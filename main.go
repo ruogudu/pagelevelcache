@@ -43,7 +43,7 @@ func main() {
 		funCalcNum(*tracePtr)
 	}
 	if *evalPtr {
-		funBenchTraceThroughtput(*tracePtr, *algoPtr, *sizePtr, *threadPtr, *itemsPtr)
+		funBenchTraceThroughtput(*tracePtr, *algoPtr, *sizePtr, *bucketPtr, *samplePtr, *threadPtr, *itemsPtr, *adPtr)
 	}
 }
 
@@ -84,13 +84,20 @@ func funCalcNum(filename string) {
 	fmt.Println("QPS: ", qps)
 }
 
-func funBenchTraceThroughtput(filename string, algorithm string, size int64, threads int, pruningItems int) {
+func funBenchTraceThroughtput(filename string, algorithm string, size int64, buckets int, samplenum int, threads int, pruningItems int, ad int64) {
 	chs, err := parse.ParseFileWithoutValue(filename, 1)
 	if err != nil {
 		return
 	}
 
-	fmt.Println("Size: ", size, " Threads: ", threads, "Pruning items: ", pruningItems)
+	fmt.Println("Trace:", filename)
+	fmt.Println("Algorithm:", algorithm)
+	fmt.Println("Cache size:", size)
+	fmt.Println("Buckets:", buckets)
+	fmt.Println("Samples:", samplenum)
+	fmt.Println("Pruning items:", pruningItems)
+	fmt.Println("Admission threshold:", ad)
+
 	num := calcNum(chs[0])
 	fmt.Println("Num: ", num)
 
@@ -103,7 +110,7 @@ func funBenchTraceThroughtput(filename string, algorithm string, size int64, thr
 	time.Sleep(60 * time.Second)
 	fmt.Println("")
 
-	qps := evaluate.EvalCcacheTrace(chs, algorithm, size, num, uint32(pruningItems), time.Minute * 10, threads)
+	qps := evaluate.EvalCcacheTrace(chs, algorithm, size, buckets, samplenum, num, uint32(pruningItems), time.Minute * 10, threads, ad)
 	fmt.Printf("%v ", qps);
 	fmt.Println("")
 
