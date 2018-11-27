@@ -108,7 +108,7 @@ func funBenchTraceThroughtput(filename string, algorithm string, size int64, buc
 
 	fmt.Print("Wait 60s for parsing...")
 	time.Sleep(60 * time.Second)
-	fmt.Println("")
+	fmt.Println("Finished")
 
 	qps := evaluate.EvalCcacheTrace(chs, algorithm, size, buckets, samplenum, num, uint32(pruningItems), time.Minute * 10, threads, ad)
 	fmt.Printf("%v ", qps);
