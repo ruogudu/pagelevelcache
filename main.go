@@ -97,6 +97,7 @@ func funBenchTraceThroughtput(filename string, algorithm string, size int64, buc
 	fmt.Println("Samples:", samplenum)
 	fmt.Println("Pruning items:", pruningItems)
 	fmt.Println("Admission threshold:", ad)
+	fmt.Println("Threads:", threads)
 
 	num := calcNum(chs[0])
 	fmt.Println("Num: ", num)
