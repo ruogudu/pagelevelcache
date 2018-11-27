@@ -111,8 +111,7 @@ func funBenchTraceThroughtput(filename string, algorithm string, size int64, buc
 	fmt.Println("Finished")
 
 	qps := evaluate.EvalCcacheTrace(chs, algorithm, size, buckets, samplenum, num, uint32(pruningItems), time.Minute * 10, threads, ad)
-	fmt.Printf("%v ", qps);
-	fmt.Println("")
+	fmt.Println("QPS: ", qps);
 
 }
 
